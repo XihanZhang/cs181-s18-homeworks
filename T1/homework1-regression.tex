@@ -1,13 +1,12 @@
 \documentclass[submit]{harvardml}
 
 % Put in your full name and email address.
-\name{Your Name}
-\email{email@fas.harvard.edu}
+\name{Xihan Zhang}
+\email{xihanzhang@hsph.harvard.edu}
 
 % List any people you worked with.
 \collaborators{%
-  John Doe,
-  Fred Doe
+  Fangli Geng
 }
 
 % You don't need to change these.
@@ -124,11 +123,50 @@ $.
 
 
 \subsubsection*{Solution}
+\begin{itemize}
+\item[(a)] Plug $p(\boldw)$ and $p(\boldy \given \boldX, \boldw)$ in $\ln p(\boldw \given \boldy, \boldX)$, we get
+\begin{align*}
+\ln p(\boldw \given \boldy, \boldX)=  \ln \mathcal{N}(\boldw \given \bold0, \tau_w^{-1}\ident ) + \ln \prod_{i=1}^n \mcN(y_i \given \boldw^\trans \boldx_i, \tau_n^{-1})
+\end{align*}
+which is
+\begin{align*}
+\ln p(\boldw \given \boldy, \boldX)= -\frac{1}{2} \ln \text{det}(2 \pi \tau_w^{-1})- \frac{1}{2} \tau_w \boldw^\trans \boldw -\frac{1}{2}\sum_{i = 1}^n\ln \text{det}(2 \pi \tau_n^{-1}) - \frac{1}{2} \tau_n \sum_{i=1}^n (y_i - \boldw^\trans \boldx_i)^\trans (y_i - \boldw^\trans \boldx_i)
+\end{align*}
+Regardless of constant we can see
+\begin{align*}
+\ln p(\boldw \given \boldy, \boldX) \propto -\frac{1}{2}\sum_{i = 1}^n (y_i - \boldw^\trans \boldx_i)^2 -\frac{\tau_w}{\tau_n}\frac{1}{2}\boldw^\trans \boldw
+\end{align*}
+which is 
+\begin{align*}
+\ln p(\boldw \given \boldy, \boldX) \propto -\mcL(\boldw) -\frac{\tau_w}{\tau_n}\mcR(\boldw)
+\end{align*}
+So that maximizing the posterior is equivalent to minimizing the regularized error term given by $\mcL(\boldw) + \lambda \mcR(\boldw)$ for $\lambda=\frac{\tau_w}{\tau_n}$
 
 
+\item[(b)]  The loss can be written as:
+ \begin{align*}
+ \mcL(\boldw) = [ \boldy^\top - (\boldX \boldw)^\top] (\boldy - \boldX
+\boldw) + \lambda \boldw^\top \boldw  \\
+\mcL(\boldw) = \boldy^\top \boldy - \boldy^\top(\boldX \boldw) - (\boldX \boldw)^\top \boldy + (\boldX \boldw)^\top(\boldX \boldw) + \lambda \boldw^\top \boldw 
+ \end{align*}
+ Take the gradient of part we can get:
+ \begin{align*}
+ \frac{\partial \mcL}{\partial \boldw} = -2\boldX^\top \boldy + 2\boldX^\top \boldX \boldw + 2 \lambda \boldw
+ \end{align*}
 
+\item[(c)] Set the gradient $\mcL(\boldw) = 0$, we can get:
+\begin{align*}
+-2\boldX^\top \boldy + 2\boldX^\top \boldX \boldw + 2 \lambda \boldw = 0\\
+\boldX^\top \boldy - (\boldX^\top \boldX + \lambda \ident)\boldw = 0
+ \end{align*}
+Since $\forall x\in \boldR^{n}$, $\boldx^\top(\boldX^\top \boldX + \lambda \ident)\boldx = \left \| \boldX \boldx \right \|_{2}^{2} + \lambda \left \| x \right \|_{2}^{2}$ is positive in this case, so that $(\boldX^\top \boldX + \lambda \ident)$ is inversable. Then the equation can be written as:
+\begin{align*}
+\boldw = (\boldX^\top \boldX + \lambda \ident)^{-1} \boldX^\top \boldy
+ \end{align*}
 
-
+ \item[(d)] In this way, our model would give more information than data has, so that the model would perfectly fit with data at the price of decreasing the capability of generalization. i.e. this would cause over-fitting problem. Regularization can help reduce the complexity of model by adding penalty term coordinated by parameter $\lambda$ into loss function. The penalty term includes number of total weights. By increasing $\lambda$, loss function would be more sensitive to penalty term, so that the total number of weights would be reduced to decrease the whole loss function.
+ 
+\end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,10 +233,79 @@ number of sunspots controls the number of Republicans in the senate?
 
 \end{problem}
 
-
-
 \subsubsection*{Solution}
+\begin{itemize}
+\item[(A)]years vs. number of Republicans
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_simplest}
+\caption{Data and regression for the simple linear case The model is too simple, so that the model is underfitting}
+\label{fig:2_simplest}
+\end{figure}
 
+\newpage
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_a}
+\caption{(a) $\phi_j(x) = x^j$ for $j=1, \ldots, 5$. The number of polynomial features is too little to capture complexity of data, so that the model is underfitting}
+\label{fig:2_a}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_b}
+\caption{(b) $\phi_j(x) = \exp{\frac{-(x-\mu_j)^2}{25}}$ for $\mu_j=1960, 1965, 1970, 1975, \ldots 2010$. The model sub-clusters it's variable by years, which coincide well with trend, so that it is well-fitting}
+\label{fig:2_b}
+\end{figure}
+
+\newpage
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_c}
+\caption{(c) $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 5$. The frequency of cos is too little to capture complexity of data, so that the model is underfitting}
+\label{fig:2_c}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_d}
+\caption{(d) $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 25$. The frequency of cos is too large, so that the model is overfitting}
+\label{fig:2_d}
+\end{figure}
+
+\newpage
+\item[(B)] Number of Sunspots vs. Number of Republicans
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_simplest_2}
+\caption{Simple linear case. There's no obvious pattern of data, and simple linear model is too simple to capture the complexity of data, so that the model is underfitting}
+\label{fig:2_simplest_2}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_a_2}
+\caption{(a) $\phi_j(x) = x^j$ for $j=1, \ldots, 5$. There's no obvious pattern of data that follows polynomial models, so that the model is underfitting}
+\label{fig:2_a_2}
+\end{figure}
+
+\newpage
+We don't fit the model (b), because it's designed to capture the data trend towards year, which makes no sense in the relationship between number of sunspots and number of republicans.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_c_2}
+\caption{(c) $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 5$. There's no obvious pattern of data that follows cos models, and the frequency of cos is too little to capture every point of data, so that even though the model seems too complex to data, it is still underfitting}
+\label{fig:2_c_2}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/2_d_2}
+\caption{(d) $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 25$. There's no obvious pattern of data that follows cos models, and high frequency drives cos model crazy to fit with every data, so that the model is overfitting}
+\label{fig:2_d_2}
+\end{figure}
+From the MSE of all the models above, the simple linear regression fits best, because it is the simplest among all the models, but the error is still too large. From the quality of fits, we have no evidence to believe that number of sunspots control number of republicans.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 3
@@ -253,9 +360,31 @@ Finally, assume that $x_i \sim Unif(-5,5)$ and that each $a_j \sim Unif(-1,1)$. 
 
 \end{problem}
 
+\newpage
 \subsubsection*{Solution}
 
+\begin{itemize}
+\item[(b)]By plotting $\chi^2_{min}(K)$ with K=1, 2, 3, ..., 15, we can see the function is decreasing:
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/3_b}
+\caption{Plot of $\chi^2_{min}(K)$}
+\label{fig:3_b}
+\end{figure}
 
+\item[(c)]After simulation we get the following results:
+
+The mean of optimal K over 500 trails is 9.99.
+The varriance of optimal K over 500 trails is 0.0139
+
+\item[(d)] The plot result is as follow:
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{data/3_d}
+\caption{x-axis is the number of samples (N) on a log-scale, and the y-axis is the mean value of the optimal K with error bars indicating the variance over 500 trials}
+\label{fig:3_d}
+\end{figure}
+\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -266,5 +395,5 @@ Finally, assume that $x_i \sim Unif(-5,5)$ and that each $a_j \sim Unif(-1,1)$. 
 Approximately how long did this homework take you to complete?
 \end{problem}
 \textbf{Answer:}
-
+6 hours on reading books and notes; 15 hours on coding; 4 hours on Latex the result. Thus, it is 25 hours.
 \end{document}
